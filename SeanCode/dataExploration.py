@@ -9,6 +9,11 @@ from sklearn.preprocessing import StandardScaler
 
 countries = ["Sweden", "Turkey", "Romania", "Czech Republic", "Norway", "Italy", "Austria", "Netherlands", "Poland", "Switzerland", \
 			 "France", "Finland", "Ukraine", "United Kingdom", "Denmark", "Germany", "Portugal", "Belgium"]
+nordicCountries = ["Sweden", "Norway", "Denmark", "Finland"]
+eastEuroCountries = ["Romania", "Poland", "Ukraine"]
+southEuroCountries = ["Turkey", "Italy", "Portugal"]
+centralEuroCountries = ["Czech Republic", "Germany", "Austria", "Switzerland"]
+westEuroCountries = ["Netherlands", "France", "United Kingdom", "Belgium"]
 
 # Data preprocessing
 trends = pd.read_csv("../trends.csv")
@@ -23,10 +28,15 @@ frame["date"] = frame
 trends["Month"] = frame["date"].dt.month
 trends["Year"] = frame["date"].dt.year
 trends.drop("Week", axis=1)
-trends = trends[["Score", "Year", "Month", "Rank", "Country", "Region", "Term"]]
+trends = trends[["Term", "Rank", "Country", "Region", "Year", "Month", "Score"]]
 
 # Create dataframes for Eurpean countries
 europeTrends = trends[trends["Country"].isin(countries)]
+nordicTrends = trends[trends["Country"].isin(nordicCountries)]
+eastEuroTrends = trends[trends["Country"].isin(eastEuroCountries)]
+southEuroTrends = trends[trends["Country"].isin(southEuroCountries)]
+centralEuroTrends = trends[trends["Country"].isin(centralEuroCountries)]
+westEuroTrends = trends[trends["Country"].isin(westEuroCountries)]
 swedenTrends = trends[trends["Country"] == "Sweden"]
 turkeyTrends = trends[trends["Country"] == "Turkey"]
 romaniaTrends = trends[trends["Country"] == "Romania"]
@@ -45,4 +55,8 @@ danishTrends = trends[trends["Country"] == "Denmark"]
 germanTrends = trends[trends["Country"] == "Germany"]
 portugalTrends = trends[trends["Country"] == "Portugal"]
 belgianTrends = trends[trends["Country"] == "Belgium"]
-print(europeTrends.head())
+
+#europeTopTen = europeTrends[europeTrends["Rank"] <= 10]
+europe2023 = europeTrends[europeTrends["Year"] == 2023]
+europe2023TopTen = europe2023[europe2023["Rank"] <= 10]
+print(len(europe2023TopTen["Term"].unique()))
