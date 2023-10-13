@@ -67,3 +67,18 @@ plt.xlabel("")
 plt.ylabel("Searches")
 plt.title("Number of Searches by Southern European Country")
 plt.show()
+
+# Plot number of searches in Turkey by top 10 regions
+turkeyTrendsCount = turkeyTrends.groupby("Sub-Region", as_index=False).count()
+sns.barplot(x="Sub-Region", y="Term", data=turkeyTrendsCount.nlargest(10, "Term"))
+plt.xlabel("")
+plt.ylabel("Searches")
+plt.title("Number of Searches by Top 10 Turkish Regions")
+plt.show()
+
+# Plot number of searches in Turkey by bottom 10 regions
+sns.barplot(x="Sub-Region", y="Term", data=turkeyTrendsCount.nsmallest(10, "Term"))
+plt.xlabel("")
+plt.ylabel("Searches")
+plt.title("Number of Searches by Bottom 10 Turkish Regions")
+plt.show()
