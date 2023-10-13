@@ -20,8 +20,8 @@ trends = pd.read_csv("../trends.csv")
 trends = trends.drop(columns = ["country_code", "region_code", "refresh_date"], axis=1)
 trends["week"] = trends["week"].str[:7]
 trends = trends.rename(columns = {"week":"Year-Month"})
-trends.columns = ["Score", "Year-Month", "Rank", "Country", "Region", "Term"]
-trends = trends[["Term", "Rank", "Country", "Region", "Year-Month", "Score"]]
+trends.columns = ["Score", "Year-Month", "Rank", "Country", "Sub-Region", "Term"]
+trends = trends[["Term", "Rank", "Country", "Sub-Region", "Year-Month", "Score"]]
 
 # Create dataframes for Eurpean countries
 europeTrends = trends[trends["Country"].isin(countries)]
@@ -49,12 +49,10 @@ germanTrends = trends[trends["Country"] == "Germany"]
 portugalTrends = trends[trends["Country"] == "Portugal"]
 belgianTrends = trends[trends["Country"] == "Belgium"]
 
-#europeTopTen = europeTrends[europeTrends["Rank"] <= 10]
-#europe2023 = europeTrends[europeTrends["Year"] == 2023]
-#europe2023TopTen = europe2023[europe2023["Rank"] <= 10]
-print(len(europeTrends["Term"].unique()))
-print(len(nordicTrends["Term"].unique()))
-print(len(eastEuroTrends["Term"].unique()))
-print(len(southEuroTrends["Term"].unique()))
-print(len(centralEuroTrends["Term"].unique()))
-print(len(westEuroTrends["Term"].unique()))
+# Assign region classifiers to countries
+europeTrends = europeTrends.assign(Region = europeTrends["Country"])
+europeTrends.loc[europeTrends["Region"].isin(nordicCountries), "Region"] = "Nordic Countries"
+europeTrends.loc[europeTrends["Region"].isin(eastEuroCountries), "Region"] = "Eastern Europe"
+europeTrends.loc[europeTrends["Region"].isin(southEuroCountries), "Region"] = "Southern Europe"
+europeTrends.loc[europeTrends["Region"].isin(centralEuroCountries), "Region"] = "Central Europe"
+europeTrends.loc[europeTrends["Region"].isin(westEuroCountries), "Region"] = "Western Europe"
