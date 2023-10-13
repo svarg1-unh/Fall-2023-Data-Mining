@@ -7,6 +7,9 @@ import missingno as msno
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 
+countries = ["Sweden", "Turkey", "Romania", "Czech Republic", "Norway", "Italy", "Austria", "Netherlands", "Poland", "Switzerland", \
+			 "France", "Finland", "Ukraine", "United Kingdom", "Denmark", "Germany", "Portugal", "Belgium"]
+
 # Data preprocessing
 trends = pd.read_csv("../trends.csv")
 trends = trends.drop("country_code", axis=1)
@@ -23,6 +26,7 @@ trends.drop("Week", axis=1)
 trends = trends[["Score", "Year", "Month", "Rank", "Country", "Region", "Term"]]
 
 # Create dataframes for Eurpean countries
+europeTrends = trends[trends["Country"].isin(countries)]
 swedenTrends = trends[trends["Country"] == "Sweden"]
 turkeyTrends = trends[trends["Country"] == "Turkey"]
 romaniaTrends = trends[trends["Country"] == "Romania"]
@@ -36,9 +40,9 @@ swissTrends = trends[trends["Country"] == "Switzerland"]
 frenchTrends = trends[trends["Country"] == "France"]
 finnishTrends = trends[trends["Country"] == "Finland"]
 ukrainianTrends = trends[trends["Country"] == "Ukraine"]
-swedenTrends = trends[trends["Country"] == "Sweden"]
 britishTrends = trends[trends["Country"] == "United Kingdom"]
 danishTrends = trends[trends["Country"] == "Denmark"]
 germanTrends = trends[trends["Country"] == "Germany"]
 portugalTrends = trends[trends["Country"] == "Portugal"]
 belgianTrends = trends[trends["Country"] == "Belgium"]
+print(europeTrends.head())
