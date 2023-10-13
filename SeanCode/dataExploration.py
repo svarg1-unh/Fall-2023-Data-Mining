@@ -17,18 +17,11 @@ westEuroCountries = ["Netherlands", "France", "United Kingdom", "Belgium"]
 
 # Data preprocessing
 trends = pd.read_csv("../trends.csv")
-trends = trends.drop("country_code", axis=1)
-trends = trends.drop("region_code", axis=1)
-trends = trends.drop("refresh_date", axis=1)
-trends.columns = ["Score", "Week", "Rank", "Country", "Region", "Term"]
-# Extract month and year from week attribute
-frame = pd.to_datetime(trends["Week"])
-frame = pd.DataFrame([frame]).transpose() 
-frame["date"] = frame
-trends["Month"] = frame["date"].dt.month
-trends["Year"] = frame["date"].dt.year
-trends.drop("Week", axis=1)
-trends = trends[["Term", "Rank", "Country", "Region", "Year", "Month", "Score"]]
+trends = trends.drop(columns = ["country_code", "region_code", "refresh_date"], axis=1)
+trends["week"] = trends["week"].str[:7]
+trends = trends.rename(columns = {"week":"Year-Month"})
+trends.columns = ["Score", "Year-Month", "Rank", "Country", "Region", "Term"]
+trends = trends[["Term", "Rank", "Country", "Region", "Year-Month", "Score"]]
 
 # Create dataframes for Eurpean countries
 europeTrends = trends[trends["Country"].isin(countries)]
@@ -57,6 +50,11 @@ portugalTrends = trends[trends["Country"] == "Portugal"]
 belgianTrends = trends[trends["Country"] == "Belgium"]
 
 #europeTopTen = europeTrends[europeTrends["Rank"] <= 10]
-europe2023 = europeTrends[europeTrends["Year"] == 2023]
-europe2023TopTen = europe2023[europe2023["Rank"] <= 10]
-print(len(europe2023TopTen["Term"].unique()))
+#europe2023 = europeTrends[europeTrends["Year"] == 2023]
+#europe2023TopTen = europe2023[europe2023["Rank"] <= 10]
+print(len(europeTrends["Term"].unique()))
+print(len(nordicTrends["Term"].unique()))
+print(len(eastEuroTrends["Term"].unique()))
+print(len(southEuroTrends["Term"].unique()))
+print(len(centralEuroTrends["Term"].unique()))
+print(len(westEuroTrends["Term"].unique()))
