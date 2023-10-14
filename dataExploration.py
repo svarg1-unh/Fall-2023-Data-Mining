@@ -1,3 +1,86 @@
+# Categorical - Categorical
+#Importing the necessary modules
+import matplotlib.pyplot as plt
+import pandas as pd
+
+
+#Initializing the lists for X and Y
+data = pd.read_csv('/Users/rajdeepbhattacharya/Desktop/Phase 4-Data Exploration-Assignment/trends-rankterm.csv')
+
+df = pd.DataFrame(data)
+
+X = list(df.iloc[:, 1])
+Y = list(df.iloc[:, 0])
+
+#Plotting the data using bar() method
+plt.bar(X, Y, color='g')
+plt.title("Bar Graph On Terms And Ranks")
+plt.xlabel("Terms")
+plt.ylabel("Ranks")
+
+#Showing the plot
+plt.show()
+
+
+
+
+
+
+# Numerical-Numerical
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# %matplotlib inline
+import warnings
+warnings.filterwarnings('ignore')
+
+df = pd.read_csv('./trends.csv')
+df = df.drop(columns = ['region_name', 'region_code', 'score', 'refresh_date'], axis=1)
+df['week'] = df['week'].str[:7]
+df = df.rename(columns={'week':'year'})
+
+newDf = df.groupby(['year', 'term']).size().reset_index(name='Frequency')
+newDf = newDf[newDf['Frequency'] > 6]
+
+print(newDf)
+print(newDf['Frequency'].value_counts())
+sns.relplot( data= newDf[['year','term', 'Frequency']], x = 'year', y = 'Frequency', hue = 'term')
+plt.xlabel('Date')
+plt.ylabel('Frequency')
+plt.title('Most Significant Search Terms')
+plt.xticks(rotation='vertical', fontsize=8)
+plt.tight_layout()
+plt.show()
+
+liverpoolDf = newDf[newDf['term'] == 'Liverpool']
+print(liverpoolDf)
+#Demonstrating Pearson's correlation coefficient between Date and search Term Frequency of Liverpool
+liverpoolDf['Numeric_date'] = pd.to_datetime(liverpoolDf['year']).apply(lambda x: x.timestamp())
+
+#Create Pearson's correlation coefficient between Date and search Term Frequency of Liverpool
+correlation = liverpoolDf['Numeric_date'].corr(liverpoolDf['Frequency'])
+print(f"Correlation: {correlation: .2f} ")
+
+plt.figure(figsize=(10, 6))
+plt.plot(liverpoolDf['year'], liverpoolDf['Frequency'], label='Frequency')
+plt.xlabel('Date (Timestamp)')
+plt.ylabel('Frequency')
+plt.title('Search Term Frequency Over Time of \'Liverpool\'')
+plt.legend()
+
+# Display the plot
+plt.text(0.1, 0.9, f'Correlation: {correlation:.2f}', transform=plt.gca().transAxes, fontsize=12, color='red')
+plt.xticks(rotation='vertical')
+plt.tight_layout()
+plt.show()
+
+
+
+
+
+
+# Categorical-Numerical
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -25,24 +108,7 @@ eastEuroTrends = europeTrends[europeTrends["Country"].isin(eastEuroCountries)]
 southEuroTrends = europeTrends[europeTrends["Country"].isin(southEuroCountries)]
 centralEuroTrends = europeTrends[europeTrends["Country"].isin(centralEuroCountries)]
 westEuroTrends = europeTrends[europeTrends["Country"].isin(westEuroCountries)]
-swedenTrends = europeTrends[europeTrends["Country"] == "Sweden"]
 turkeyTrends = europeTrends[europeTrends["Country"] == "Turkey"]
-romaniaTrends = europeTrends[europeTrends["Country"] == "Romania"]
-czechTrends = europeTrends[europeTrends["Country"] == "Czech Republic"]
-norwayTrends = europeTrends[europeTrends["Country"] == "Norway"]
-italyTrends = europeTrends[europeTrends["Country"] == "Italy"]
-austriaTrends = europeTrends[europeTrends["Country"] == "Austria"]
-dutchTrends = europeTrends[europeTrends["Country"] == "Netherlands"]
-polandTrends = europeTrends[europeTrends["Country"] == "Poland"]
-swissTrends = europeTrends[europeTrends["Country"] == "Switzerland"]
-frenchTrends = europeTrends[europeTrends["Country"] == "France"]
-finnishTrends = europeTrends[europeTrends["Country"] == "Finland"]
-ukrainianTrends = europeTrends[europeTrends["Country"] == "Ukraine"]
-britishTrends = europeTrends[europeTrends["Country"] == "United Kingdom"]
-danishTrends = europeTrends[europeTrends["Country"] == "Denmark"]
-germanTrends = europeTrends[europeTrends["Country"] == "Germany"]
-portugalTrends = europeTrends[europeTrends["Country"] == "Portugal"]
-belgianTrends = europeTrends[europeTrends["Country"] == "Belgium"]
 
 # Assign region classifiers to countries
 europeTrends = europeTrends.assign(Region = europeTrends["Country"])
