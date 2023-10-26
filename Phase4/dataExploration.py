@@ -5,7 +5,7 @@ import pandas as pd
 
 
 #Initializing the lists for X and Y
-data = pd.read_csv('..\trends.csv')
+data = pd.read_csv('trends.csv')
 
 df = pd.DataFrame(data)
 
@@ -35,7 +35,7 @@ import seaborn as sns
 import warnings
 warnings.filterwarnings('ignore')
 
-df = pd.read_csv('..\trends.csv')
+df = pd.read_csv('trends.csv')
 df = df.drop(columns = ['region_name', 'region_code', 'score', 'refresh_date'], axis=1)
 df['week'] = df['week'].str[:7]
 df = df.rename(columns={'week':'year'})
@@ -94,7 +94,7 @@ centralEuroCountries = ["Czech Republic", "Germany", "Austria", "Switzerland"]
 westEuroCountries = ["Netherlands", "France", "United Kingdom", "Belgium"]
 
 # Data preprocessing
-trends = pd.read_csv("..\trends.csv")
+trends = pd.read_csv("trends.csv")
 trends = trends.drop(columns = ["country_code", "region_code", "refresh_date"], axis=1)
 trends["week"] = trends["week"].str[:7]
 trends = trends.rename(columns = {"week":"Year-Month"})
