@@ -29,6 +29,13 @@ class GraphPlotter():
             self.colors = iter(cm.rainbow(np.linspace(0, 1, 8)))
             self.plot_linear_regression(continental)
 
+        #Plotting graph for each continents as we are trying to get meaningful observations from each continents
+        for continental in GraphPlotter.continents:
+            self.legendsColor = []
+            self.colors = iter(cm.rainbow(np.linspace(0, 1, 8)))
+            self.isotonic_plotter(continental)
+        
+
     def linear_regression_calculations(self,x,y): 
         # Estimate Regression Coefficients 
         b = self.estimate_coef(x, y) 
@@ -78,7 +85,6 @@ class GraphPlotter():
         return(root_mse,nrmse)
 
     def plot_linear_regression(self, continental):
-        temp_df = self.df.copy()
         self.df = self.master_df[self.master_df['continent'] == continental]
 
         #Iterating over unique categories to get frequency of each categories over a period of time 
@@ -107,7 +113,7 @@ class GraphPlotter():
         plt.legend(handles = self.legendsColor)
         plt.xlabel('Year') 
         plt.ylabel('Frequency') 
-        plt.title ('Category Frequency across Year in %s'%continental)     
+        plt.title ('Linear Regression of Category Frequency across Year in %s'%continental)     
         plt.show() 
 
 
@@ -131,14 +137,39 @@ class GraphPlotter():
     #         plt.plot(x,y_poly_pred, color= color)
 
 
-    # def draw_isotonic_regression(self,x,y):
-    #     isotonic_reg = IsotonicRegression()
-    #     y_iso = isotonic_reg.fit_transform(x,y)
-    #     rmse = np.sqrt(mean_squared_error(x,y_iso))
-    #     print(rmse)
-    #     color = next(self.colors)
-    #     plt.plot(x, y, 'o', label='data', color= color) 
-    #     plt.plot(x,y_iso,'-',markersize=10,label='isotonic regression' , color= color)
+    #Isotonic regression line plotter
+    def draw_isotonic_regression(self,x,y, category):
+        isotonic_reg = IsotonicRegression()
+        y_iso = isotonic_reg.fit_transform(x,y)
+        rmse = np.sqrt(mean_squared_error(x,y_iso))
+        print(rmse)
+
+        #Not considering RMSE value as rmse doesn't seems to be a good evaluation metric for our regression
+        color = next(self.colors)
+        plt.plot(x, y, 'o', label='data', color= color) 
+        plt.plot(x,y_iso,'-',markersize=10,label='isotonic regression' , color= color)
+        self.legendsColor.append(Line2D([0],[0],color= color, linewidth=4, label=category )) 
+
+
+    def isotonic_plotter(self, continent):
+        self.df = self.master_df[self.master_df['continent'] == continent]
+
+        #Iterating over unique categories to get frequency of each categories over a period of time 
+        for cat in self.df['category'].unique():
+            temp_df = self.df.copy()
+            temp_df = temp_df[temp_df['category'] == cat]
+            temp_df = temp_df.groupby(['year','category']).size().reset_index(name='Frequency')
+            self.n = np.size(temp_df['Frequency'])
+            #Limiting our dataset to consider for the data with more than 8 observations 
+            if self.n > 7:
+                self.draw_isotonic_regression(temp_df['year'], temp_df['Frequency'], cat)
+        
+        plt.legend(handles = self.legendsColor)
+        plt.xlabel('Year') 
+        plt.ylabel('Frequency') 
+        plt.title ('Isotonic Regression of Category Frequency across Year in %s'%continent) 
+        plt.show()
+
 
     # def plot_polynomial_regression(self):
     #     temp_df = self.df.copy()
