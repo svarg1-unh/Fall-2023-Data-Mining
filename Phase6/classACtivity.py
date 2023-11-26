@@ -1,5 +1,6 @@
 # Import necessary libraries
 import pandas as pd
+from IPython.display import display
 from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score, classification_report
@@ -9,7 +10,9 @@ file_path = 'trends_by_cat.csv'
 df = pd.read_csv(file_path)
 df = df[df["location"] == "Global"]
 
-
+df["frequency"] = df["query"].map(df["query"].value_counts())
+print(df)
+#print(len(pd.unique(df["query"])))
 
 
 
