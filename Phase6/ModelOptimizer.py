@@ -35,7 +35,7 @@ class GraphPlotter():
         # for continental in GraphPlotter.continents:
         self.legendsColor = []
         self.colors = iter(cm.rainbow(np.linspace(0, 1, 8)))
-        # self.isotonic_plotter()
+        self.isotonic_plotter()
 
 
         self.gradient_descent()
@@ -81,8 +81,8 @@ class GraphPlotter():
         plt.scatter(self.x_train, self.y_train, marker= "o", color = color)
         plt.scatter(self.x_test, self.y_test,marker= "x", color = color)
         plt.plot(self.x_train, y_pred, color = color)
-        plt.xlim(2000, 2024)
-        plt.ylim(0, 30)
+        plt.xlim(2000, 2021)
+        plt.ylim(0, 20)
         plt.xlabel('Year') 
         plt.ylabel('Frequency') 
         plt.show()
@@ -146,10 +146,10 @@ class GraphPlotter():
                 if rmse > 0.2:
                     self.rankedCategories.append({
                                                 "category": cat, 
-                                                "x_train": self.x_train.tolist(), 
-                                                "y_train": self.y_train.tolist(), 
-                                                "x_test": self.x_test.tolist(), 
-                                                "y_test": self.y_test.tolist(), 
+                                                "x_train": self.x_train, 
+                                                "y_train": self.y_train, 
+                                                "x_test": self.x_test, 
+                                                "y_test": self.y_test, 
                                                 "coef_b": coef_b, 
                                                 "rmse": rmse
                                                 })
@@ -182,15 +182,18 @@ class GraphPlotter():
         # print(mast_df)
 
         #Iterating over unique categories to get frequency of each categories over a period of time 
-        for cat in self.df['category'].unique():
+        # for cat in self.df['category'].unique():
+        print(self.rankedCategories)
+        for cat in self.rankedCategories:
+            category = cat['category']
+            initial_b = cat['coef_b']
+            # temp_df = self.df.copy()
+            # temp_df = temp_df[temp_df['category'] == cat]
+            # temp_df = temp_df.groupby(['year','category']).size().reset_index(name='Frequency')
             
-            temp_df = self.df.copy()
-            temp_df = temp_df[temp_df['category'] == cat]
-            temp_df = temp_df.groupby(['year','category']).size().reset_index(name='Frequency')
-            
-            self.n = np.size(temp_df['Frequency'])
+            # self.n = np.size(temp_df['Frequency'])
             #Limiting our dataset to consider for the data with more than 4 observations 
-            if cat in self.filteredCategories:
+            if category in self.filteredCategories:
             # if self.n > 10:
                 iterations = 10000
                 steps = 50
@@ -198,40 +201,43 @@ class GraphPlotter():
                 costs = []
                 self.colors = iter(cm.rainbow(np.linspace(0, 1, 8)))
                 #Splitting data into train and test data
-                self.x_train, self.x_test, self.y_train, self.y_test = train_test_split(temp_df['year'], temp_df['Frequency'], train_size=0.8, shuffle= True)
-                filteredItems = [item for item in self.rankedCategories if item['category'] == cat ]
-                b = [0,0]
-                if filteredItems:
-                    b = filteredItems[0]['coef_b']
-                first_y_pred = self.y_predict(self.x_train.tolist(), b)
+                # self.x_train, self.x_test, self.y_train, self.y_test = train_test_split(temp_df['year'], temp_df['Frequency'], train_size=0.8, shuffle= True)
+                self.x_train, self.x_test, self.y_train, self.y_test = cat['x_train'], cat['x_test'], cat['y_train'], cat['y_test']
+                
+                # filteredItems = [item for item in self.rankedCategories if item['category'] == category ]
+                # self.b = [0,0]
+                # if filteredItems:
+                #     self.b = filteredItems[0]['coef_b']
+                # first_y_pred = self.b[0] + self.b[1]*np.array(self.x_train)
 
                 """Setting the current accuracy before training model in gradient descent as best accuracy
                 """
-                test_pred = self.y_predict(self.x_test.tolist(), b)
+                test_pred = self.y_predict(self.x_test.tolist(), self.b)
                 best_accuracy = self.accuracy(self.y_test.tolist(), test_pred)
                 for _ in range(iterations):
-                    y_pred = self.y_predict(self.x_train.tolist(), b)
+                    y_pred = self.y_predict(self.x_train.tolist(), self.b)
                     cost = self.compute_cost(self.y_train, y_pred)
                     costs.append(cost)
                     self.update_coefficient(learning_rate)
 
                     if _ % steps == 0:
-                        test_pred = self.y_predict(self.x_test.tolist(), b)
+                        test_pred = self.y_predict(self.x_test.tolist(), self.b)
                         current_accuracy = self.accuracy(self.y_test.tolist(), test_pred)
                         if current_accuracy > best_accuracy:
                             best_accuracy = current_accuracy
-                            best_model = b
+                            best_model = self.b
                             break
 
                 # Show the best model
                 if best_model is not None:
-                    plt.title(cat)
+                    plt.title(category)
                     color = next(self.colors)
                     self.plot_best_plot(y_pred, "OptimizedBest Fit Line", color)
 
                 else:
-                    plt.title(cat)
+                    plt.title(category)
                     color = next(self.colors)
+                    first_y_pred = initial_b[0] + initial_b[1]*np.array(self.x_train)
                     self.plot_best_plot(first_y_pred, "OptimizedBest Fit Line", color)
 
 
@@ -279,8 +285,8 @@ class GraphPlotter():
             plt.plot(x_train,y_iso,'C1-',markersize=10,label='isotonic regression' , color= color)
             plt.scatter(x_test,y_test, marker = 'x', label='data', color= color)
 
-            x_plot = pd.Series([x_train.iloc[-1]]).append(pd.Series(x_test.tolist()))
-            y_plot = pd.Series([y_iso[-1]]).append(pd.Series(y_test_iso.tolist()))
+            x_plot = pd.Series([x_train.iloc[-1]])._append(pd.Series(x_test.tolist()))
+            y_plot = pd.Series([y_iso[-1]])._append(pd.Series(y_test_iso.tolist()))
             plt.plot(x_plot,y_plot,'C1-',markersize=10,label='isotonic regression' , color= color)
             self.legendsColor.append(Line2D([0],[0],color= color, linewidth=4, label=f'{category} ({round(rmse, 2)}) ')) 
 
@@ -295,7 +301,7 @@ class GraphPlotter():
             temp_df = temp_df.groupby(['year','category']).size().reset_index(name='Frequency')
             self.n = np.size(temp_df['Frequency'])
             #Limiting our dataset to consider for the data with more than 8 observations 
-            if self.n > 10:
+            if self.n > 6 and cat in self.filteredCategories:
                 self.draw_isotonic_regression(temp_df['year'], temp_df['Frequency'], cat)
         
         plt.legend(handles = self.legendsColor)
